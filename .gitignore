@@ -12,6 +12,17 @@ _deps
 
 build
 
+demos/basic/
+
+demos/graphic/test_camera.cpp
+demos/graphic/test_helloQuad.cpp
+demos/graphic/test_ShaderClass.cpp
+demos/graphic/test_helloTextures.cpp
+demos/graphic/test_helloTriangle.cpp
+demos/graphic/test_transformations.cpp
+demos/graphic/test_helloShaderClass.cpp
+demos/graphic/wall.jpg
+
 # Prerequisites
 *.d
 
