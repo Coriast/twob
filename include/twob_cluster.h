@@ -24,6 +24,8 @@ namespace twob
 		void rotate(vec3 axis, float angle, ModelId m);
 		void scale(vec3 scale, ModelId m);
 
+		HashModel get_models();
+
 		void render();
 
 	private:

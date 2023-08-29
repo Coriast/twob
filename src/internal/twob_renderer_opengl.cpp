@@ -35,7 +35,7 @@ namespace
 
 		void main()
 		{
-			FragColor = texture(texture_data, _texture_coords);
+			FragColor = vec4(0.3f, 0.7f, 0.2f, 1.0f);//texture(texture_data, _texture_coords);
 		}
 	)";
 
@@ -117,6 +117,16 @@ namespace twob
 		Material* material;
 
 	public:
+		Shader_OpenGL()
+		{
+			create();
+		}
+
+		Shader_OpenGL(const char* vertex_source, const char* fragment_source)
+		{
+			create(vertex_source, fragment_source);
+		}
+
 		void create() override
 		{
 			this->create(default_vertex_source, default_fragment_source);
@@ -241,9 +251,9 @@ namespace twob
 	class Camera_OpenGL : public Camera
 	{
 	private:
-		vec3 position;
-		vec3 front;
-		vec3 up;
+		vec3 position	= vec3(0.0f, 0.0f, 3.0f);
+		vec3 front		= vec3(0.0f, 0.0f, -1.0f);
+		vec3 up			= vec3(0.0f, 1.0f, 0.0f);
 		vec3 right;
 		vec3 world_up;
 
@@ -253,7 +263,7 @@ namespace twob
 		float mouse_sensitivity;
 
 	public:
-		mat4 get_view_matrix() override
+		mat4 get_view_matrix() 
 		{
 			return lookAt(position, position + front, up);
 		}
@@ -317,7 +327,9 @@ namespace twob
 	{
 	private:
 		vector<Mesh> meshes;
-		mat4x4		 model_matrix;
+		mat4		 model_matrix;
+
+		GLuint vertex_array_object;
 
 	public:
 		Model_OpenGL(Polygon shape)
@@ -332,13 +344,15 @@ namespace twob
 			case twob::PYRAMID:
 				break;
 			}
-			model_matrix = mat4x4();
+			model_matrix = mat4(1.0f);
+
+			model_data_to_gpu();
 		}
 
 		Model_OpenGL(const char* path) 
 		{
 			meshes = File::load_meshes_from_file(path);
-			model_matrix = mat4x4();
+			model_matrix = mat4(1.0f);
 		}
 
 		void transform(vec3 transform) override
@@ -355,12 +369,45 @@ namespace twob
 		{
 			model_matrix = glm::rotate(model_matrix, glm::radians(angle), axis);
 		}
+
+		void render(Shader *shader) override
+		{
+			shader->set_value("model", model_matrix);
+
+			glBindVertexArray(vertex_array_object);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		mat4 get_model_matrix() 
+		{
+			return model_matrix;
+		}
+
+	private:
+		void model_data_to_gpu()
+		{
+			glGenVertexArrays(1, &vertex_array_object);
+
+			GLuint vertex_buffer_object;
+			glGenBuffers(1, &vertex_buffer_object);
+
+			glBindVertexArray(vertex_array_object);
+
+			glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+			glBufferData(GL_ARRAY_BUFFER, (sizeof(glm::vec3) + sizeof(glm::vec3) + sizeof(glm::vec2)) * meshes[0].vertices.size(), meshes[0].vertices.data(), GL_STATIC_DRAW);
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(0);
+
+			glBindVertexArray(0);
+		}
 	};
 
 	class Renderer_OpenGL : public Renderer
 	{
 	private:
-		Shader* default_shader;
+		Shader_OpenGL* default_shader;
+		Camera_OpenGL* default_camera;
 
 	public:
 		void init() override
@@ -368,15 +415,30 @@ namespace twob
 			glEnable(GL_DEPTH_TEST);
 
 			default_shader = new Shader_OpenGL();
+
+			int w, h;
+			Canvas::get_size(&w, &h);
+
+			default_shader->use();
+			glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)w / (float)h, 0.1f, 100.0f);
+			default_shader->set_value("projection", projection);
+
+			default_camera = new Camera_OpenGL();
+
 		}
 
 		void render(Cluster& cluster) override
 		{
+
 			Viewport& vp = viewport(cluster);
 			glViewport(vp.x, vp.y, vp.w, vp.h);
 
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			default_shader->set_value("view", default_camera->get_view_matrix());
+
+			cluster.get_models().at(0)->render(default_shader);
 
 		}
 

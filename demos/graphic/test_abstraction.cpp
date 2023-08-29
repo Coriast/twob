@@ -2,7 +2,7 @@
 
 using namespace twob;
 
-enum Game
+enum Objects
 {
 	meu_cubo
 };
@@ -36,7 +36,7 @@ void startup()
 	// O cluster deve ser iniciado dentro do Startup pq o construtor dele utiliza o renderer especificado.
 	bunch_of_stuff = new Cluster();
 
-	bunch_of_stuff->insert_model(Polygon::CUBE, Game::meu_cubo);
+	bunch_of_stuff->insert_model(Polygon::CUBE, Objects::meu_cubo);
 
 	// carregar os objetos que vão estar na cena
 }
@@ -55,7 +55,6 @@ void render()
 	// renderizar os objetos um por um por enquanto
 	
 	{
-
 		//bunch_of_stuff.transform(vec3(0.0f, 0.0f, 0.0f), Game::meu_cubo);
 
 		bunch_of_stuff->render();	

@@ -37,3 +37,8 @@ void Cluster::insert_model(Polygon polygon, ModelId m)
 	Model* model = Internal::app_renderer()->create_model(polygon);
 	models[m] = model;
 }
+
+HashModel Cluster::get_models()
+{
+	return models;
+}

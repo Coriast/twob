@@ -93,7 +93,6 @@ namespace twob
 	class Camera
 	{
 	public:
-		virtual mat4 get_view_matrix() = 0;
 
 		virtual void process_keyboard(Direction direct) = 0;
 		virtual void process_mouse(float x_offset, float y_offset) = 0;
@@ -112,6 +111,7 @@ namespace twob
 		virtual void scale(vec3 scale) = 0;
 		virtual void rotate(vec3 axis, float angle) = 0;
 
+		virtual void render(Shader* shader) = 0;
 	};
 
 	class DrawCall
