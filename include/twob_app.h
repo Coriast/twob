@@ -16,7 +16,7 @@ namespace twob
 	class Config
 	{
 	public:
-		const char* name = "Default";
+		cstr name = "Default";
 
 		int width = 800;
 		int height = 600;
@@ -41,7 +41,7 @@ namespace twob
 
 		const Config& config();
 
-		glm::vec2 get_size();
+		vec2 get_size();
 
 		void set_flag(Flags flag, bool enabled);
 

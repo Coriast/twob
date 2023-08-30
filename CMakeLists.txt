@@ -7,7 +7,7 @@ add_library(twob STATIC)
 
 target_sources(twob 
     PRIVATE
-        "src/twob_graphics.cpp"           
+                   
         "src/twob_redblacktree.cpp"
         "src/twob_image.cpp"
         "src/twob_filesystem.cpp"

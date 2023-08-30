@@ -3,12 +3,14 @@
 #include "twob_canvas.h"
 #include "twob_time.h"
 #include "twob_filesystem.h"
+#include "twob_aliases.h"
 #include <glad/glad.h>
 #include <iostream>
 
 namespace
 {
-	const char* default_vertex_source = R"(
+	using namespace twob;
+	cstr default_vertex_source = R"(
 		#version 330 core
 		layout (location = 0) in vec3 position;
 		layout (location = 1) in vec2 texture_coords;
@@ -25,7 +27,7 @@ namespace
 			_texture_coords = texture_coords;
 		} 
 	)";
-	const char* default_fragment_source = R"(
+	cstr default_fragment_source = R"(
 		#version 330 core
 		out vec4 FragColor;
 
@@ -39,12 +41,13 @@ namespace
 		}
 	)";
 
-	twob::Mesh cube_mesh()
+	Mesh cube_mesh()
 	{
-		twob::Mesh cube;
-		vector<twob::vertex> vertices;
+		Mesh cube;
+		vector<vertex> vertices;
 		vertices.insert(vertices.end(),
 			{
+				//  vertices					normals					 texture coords
 				{   vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 0.0f) },
 				{	vec3(0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 0.0f) },
 				{	vec3(0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 1.0f) },
@@ -90,7 +93,7 @@ namespace
 		);
 
 		cube.vertices = vertices;
-		cube.color = Color::purple;
+		cube.color = Color::purple();
 		return cube;
 	}
 }
@@ -113,8 +116,7 @@ namespace twob
 	class Shader_OpenGL : public Shader
 	{
 	private:
-		uint program_ref;
-		Material* material;
+		u_int program_ref;
 
 	public:
 		Shader_OpenGL()
@@ -122,7 +124,7 @@ namespace twob
 			create();
 		}
 
-		Shader_OpenGL(const char* vertex_source, const char* fragment_source)
+		Shader_OpenGL(cstr vertex_source, cstr fragment_source)
 		{
 			create(vertex_source, fragment_source);
 		}
@@ -132,7 +134,7 @@ namespace twob
 			this->create(default_vertex_source, default_fragment_source);
 		}
 
-		void create(const char* vertex_source, const char* fragment_source) override
+		void create(cstr vertex_source, cstr fragment_source) override
 		{
 			GLuint vertex_ref, fragment_ref;
 			vertex_ref = glCreateShader(GL_VERTEX_SHADER);
@@ -161,42 +163,42 @@ namespace twob
 			glUseProgram(this->program_ref);
 		}
 
-		void set_value(const char* name, bool& value) override
+		void set_value(cstr name, bool& value) override
 		{
 			glUniform1i(glGetUniformLocation(this->program_ref, name), value);
 		}
 
-		void set_value(const char* name, float& value) override
+		void set_value(cstr name, float& value) override
 		{
 			glUniform1f(glGetUniformLocation(this->program_ref, name), value);
 		}
 
-		void set_value(const char* name, int& value) override
+		void set_value(cstr name, int& value) override
 		{
 			glUniform1i(glGetUniformLocation(this->program_ref, name), value);
 		}
 
-		void set_value(const char* name, const glm::vec2& value) override
+		void set_value(cstr name, const vec2& value) override
 		{
 			glUniform2f(glGetUniformLocation(this->program_ref, name), value.x, value.y);
 		}
 
-		void set_value(const char* name, const glm::vec3& value) override
+		void set_value(cstr name, const vec3& value) override
 		{
 			glUniform3f(glGetUniformLocation(this->program_ref, name), value.x, value.y, value.z);
 		}
 
-		void set_value(const char* name, const glm::vec4& value) override
+		void set_value(cstr name, const vec4& value) override
 		{
 			glUniform4f(glGetUniformLocation(this->program_ref, name), value.x, value.y, value.z, value.w);
 		}
 
-		void set_value(const char* name, const glm::mat4& value) override
+		void set_value(cstr name, const mat4& value) override
 		{
-			glUniformMatrix4fv(glGetUniformLocation(this->program_ref, name), 1, false, glm::value_ptr(value));
+			glUniformMatrix4fv(glGetUniformLocation(this->program_ref, name), 1, false, value_ptr(value));
 		}
 
-		void check_compile_errors(uint shader_ref, const char* type) override
+		void check_compile_errors(u_int shader_ref, cstr type)
 		{
 			int success;
 			char infoLog[1024];
@@ -230,7 +232,7 @@ namespace twob
 		GLuint texture_ref;
 
 	public:
-		void create(const char* file_path) override
+		void create(cstr file_path) override
 		{
 			image = new Image(file_path);
 
@@ -263,7 +265,7 @@ namespace twob
 		float mouse_sensitivity;
 
 	public:
-		mat4 get_view_matrix() 
+		mat4 view_matrix() override
 		{
 			return lookAt(position, position + front, up);
 		}
@@ -307,14 +309,14 @@ namespace twob
 
 		void update_vectors() override
 		{
-			glm::vec3 front;
-			front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-			front.y = sin(glm::radians(pitch));
-			front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-			front = glm::normalize(front);
+			vec3 front;
+			front.x = cos(radians(yaw)) * cos(radians(pitch));
+			front.y = sin(radians(pitch));
+			front.z = sin(radians(yaw)) * cos(radians(pitch));
+			front = normalize(front);
 
-			right = glm::normalize(glm::cross(front, world_up));
-			up = glm::normalize(glm::cross(right, front));
+			right = normalize(cross(front, world_up));
+			up = normalize(cross(right, front));
 		}
 	};
 
@@ -326,9 +328,6 @@ namespace twob
 	class Model_OpenGL : public Model
 	{
 	private:
-		vector<Mesh> meshes;
-		mat4		 model_matrix;
-
 		GLuint vertex_array_object;
 
 	public:
@@ -349,15 +348,15 @@ namespace twob
 			model_data_to_gpu();
 		}
 
-		Model_OpenGL(const char* path) 
+		Model_OpenGL(cstr path) 
 		{
 			meshes = File::load_meshes_from_file(path);
 			model_matrix = mat4(1.0f);
 		}
 
-		void transform(vec3 transform) override
+		void translate(vec3 translate) override
 		{
-			model_matrix = glm::translate(model_matrix, transform);
+			model_matrix = glm::translate(model_matrix, translate);
 		}
 
 		void scale(vec3 scale) override
@@ -367,7 +366,7 @@ namespace twob
 
 		void rotate(vec3 axis, float angle) override
 		{
-			model_matrix = glm::rotate(model_matrix, glm::radians(angle), axis);
+			model_matrix = glm::rotate(model_matrix, radians(angle), axis);
 		}
 
 		void render(Shader *shader) override
@@ -394,7 +393,7 @@ namespace twob
 			glBindVertexArray(vertex_array_object);
 
 			glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-			glBufferData(GL_ARRAY_BUFFER, (sizeof(glm::vec3) + sizeof(glm::vec3) + sizeof(glm::vec2)) * meshes[0].vertices.size(), meshes[0].vertices.data(), GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, (sizeof(vec3) + sizeof(vec3) + sizeof(vec2)) * meshes[0].vertices.size(), meshes[0].vertices.data(), GL_STATIC_DRAW);
 
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 			glEnableVertexAttribArray(0);
@@ -405,61 +404,60 @@ namespace twob
 
 	class Renderer_OpenGL : public Renderer
 	{
-	private:
-		Shader_OpenGL* default_shader;
-		Camera_OpenGL* default_camera;
-
 	public:
 		void init() override
 		{
 			glEnable(GL_DEPTH_TEST);
-
-			default_shader = new Shader_OpenGL();
-
-			int w, h;
-			Canvas::get_size(&w, &h);
-
-			default_shader->use();
-			glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)w / (float)h, 0.1f, 100.0f);
-			default_shader->set_value("projection", projection);
-
-			default_camera = new Camera_OpenGL();
-
 		}
 
 		void render(Cluster& cluster) override
 		{
 
-			Viewport& vp = viewport(cluster);
-			glViewport(vp.x, vp.y, vp.w, vp.h);
+			Viewport* vp = viewport(cluster);
+			glViewport(vp->x, vp->y, vp->w, vp->h);
 
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			default_shader->set_value("view", default_camera->get_view_matrix());
+			cluster.shader()->use();
+			cluster.shader()->set_value("projection", perspective(radians(45.0f), (float)vp->w / (float)vp->h, 0.1f, 1000.0f));
+			cluster.shader()->set_value("view", cluster.camera()->view_matrix());
 
-			cluster.get_models().at(0)->render(default_shader);
+			cluster.models().at(0)->render(cluster.shader());
 
+		}
+
+		// Factory Methods //
+
+		Shader* create_shader(cstr vertex_source = nullptr, cstr fragment_source = nullptr) override
+		{
+			if (vertex_source == nullptr || fragment_source == nullptr)
+				return new Shader_OpenGL();
+			else
+				return new Shader_OpenGL(vertex_source, fragment_source);
 		}
 
 		Material* create_material(MaterialData* material = nullptr) override
 		{
-			if(material == nullptr) 
+			if (material == nullptr)
 				return new Material_OpenGL(); // return default material
 			else
-			{
-				// Create OpenGL material based on properties
-			}
+				return nullptr;// Create OpenGL material based on properties
 		}
 
-		Model* create_model(const char* file_path)
+		Model* create_model(cstr file_path) override
 		{
 			return nullptr;
 		}
 
-		Model* create_model(Polygon shape)
+		Model* create_model(Polygon shape) override
 		{
 			return new Model_OpenGL(shape);
+		}
+
+		Camera* create_camera() override
+		{
+			return new Camera_OpenGL();
 		}
 	};
 

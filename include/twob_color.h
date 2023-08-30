@@ -1,16 +1,15 @@
 #pragma once
 
-namespace 
+namespace twob
 {
 	struct Color
 	{
-		Color() {};
-		constexpr Color(int r, int g, int b) : r(r), g(g), b(b) {}
 		int r, g, b;
+		constexpr Color() : r(0), g(0), b(0) {}
+		constexpr Color(int r, int g, int b) : r(r), g(g), b(b) {}
 
-		static const Color red;
-		static const Color purple;
+		static constexpr Color red()	{ return Color(255, 0, 0); }
+		static constexpr Color purple() { return Color(255, 0, 255); }
 	};
-	const Color Color::red = Color(255, 0, 0);
-	const Color Color::purple = Color(255, 0, 255);
+	
 }

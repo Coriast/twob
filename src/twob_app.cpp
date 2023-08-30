@@ -9,8 +9,8 @@ namespace
 {
 	struct AppFlags
 	{
-		bool fullscreen = false;
-		bool resizable = true;
+		bool fullscreen	= false;
+		bool resizable	= true;
 	};
 	AppFlags app_flags;
 
@@ -21,8 +21,24 @@ namespace
 	Renderer*	app_renderer_api;
 }
 
-void app_step();
-void app_shutdown();
+void app_step()
+{
+	Canvas::update();
+	if (app_config.on_update != nullptr)
+		app_config.on_update();
+
+	// actually draw
+	{
+		if (app_config.on_render != nullptr)
+			app_config.on_render();
+		Canvas::swapBuffer();
+	}
+}
+
+void app_shutdown()
+{
+	Canvas::shutdown();
+}
 
 void App::run(const Config* config)
 {
@@ -65,7 +81,7 @@ Renderer* Internal::app_renderer()
 
 glm::vec2 App::get_size()
 {
-	glm::ivec2 size;
+	ivec2 size;
 	Canvas::get_size(&size.x, &size.y);
 	return size;
 }
@@ -93,21 +109,4 @@ void App::set_flag(Flags flag, bool enabled)
 	}
 }
 
-void app_step()
-{
-	Canvas::update();
-	if (app_config.on_update != nullptr)
-		app_config.on_update();
 
-	// actually draw
-	{
-		if (app_config.on_render != nullptr)
-			app_config.on_render();
-		Canvas::swapBuffer();
-	}
-}
-
-void app_shutdown()
-{
-	Canvas::shutdown();
-}
