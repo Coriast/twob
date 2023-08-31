@@ -1,16 +1,14 @@
 #pragma once
 #include <twob_graphics.h>
-#include <unordered_map>
 #include <glm/vec3.hpp>
+#include <unordered_map>
 
 using namespace glm;
 using namespace std;
 
 namespace twob
 {
-	typedef int ModelId;
-	typedef unordered_map<ModelId, Model*> HashModel;
-
+	typedef unordered_map<string, Model*> MapModel;
 	/* 
 	* Some kind of All-in- one class. The Cluster's principle is to:
 	* -> Be a 3D models basket, where you can push all the models that
@@ -30,15 +28,17 @@ namespace twob
 		void load_shader(cstr vertex_source, cstr fragment_source);
 		void load_material();
 
-		void load_model(cstr file_path, ModelId m);
-		void load_model(Polygon shape, ModelId m);
+		void load_model(cstr file_path, cstr name);
+		void load_model(Polygon shape, cstr name, cstr texture_path = nullptr);
 
-		void translate(vec3 translate, ModelId m);
-		void rotate(vec3 axis, float angle, ModelId m);
-		void scale(vec3 scale, ModelId m);
+		const Model& get_model(cstr name);
+
+		void translate(vec3 translate, int id);
+		void rotate(vec3 axis, float angle, int id);
+		void scale(vec3 scale, int id);
 
 		// Getters
-		HashModel	models()	{ return c_models; }
+		const MapModel&	models()	{ return c_models; }
 		Shader*		shader()	{ return c_shader; }
 		Material*	material()	{ return c_material; }
 		Camera*		camera()	{ return c_camera; }
@@ -57,6 +57,6 @@ namespace twob
 		Material*	c_material;
 		Camera*		c_camera;
 
-		HashModel c_models;
+		MapModel c_models;
 	};
 }

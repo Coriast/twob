@@ -6,6 +6,7 @@
 #include "twob_aliases.h"
 #include <glad/glad.h>
 #include <iostream>
+#include "internal/twob_internal.h"
 
 namespace
 {
@@ -13,7 +14,8 @@ namespace
 	cstr default_vertex_source = R"(
 		#version 330 core
 		layout (location = 0) in vec3 position;
-		layout (location = 1) in vec2 texture_coords;
+		layout (location = 1) in vec3 normals;
+		layout (location = 2) in vec2 texture_coords;
 
 		out vec2 _texture_coords;
 
@@ -37,11 +39,11 @@ namespace
 
 		void main()
 		{
-			FragColor = vec4(0.3f, 0.7f, 0.2f, 1.0f);//texture(texture_data, _texture_coords);
+			FragColor = texture(texture_data, _texture_coords);
 		}
 	)";
 
-	Mesh cube_mesh()
+	Mesh cube_mesh(cstr texture_path)
 	{
 		Mesh cube;
 		vector<vertex> vertices;
@@ -93,6 +95,7 @@ namespace
 		);
 
 		cube.vertices = vertices;
+		cube.texture = Internal::app_renderer()->create_texture(texture_path);
 		cube.color = Color::purple();
 		return cube;
 	}
@@ -227,11 +230,12 @@ namespace twob
 
 	class Texture_OpenGL : public Texture
 	{
-	private:
-		Image* image;
-		GLuint texture_ref;
-
 	public:
+		Texture_OpenGL(cstr file_path)
+		{
+			this->create(file_path);
+		}
+
 		void create(cstr file_path) override
 		{
 			image = new Image(file_path);
@@ -331,12 +335,12 @@ namespace twob
 		GLuint vertex_array_object;
 
 	public:
-		Model_OpenGL(Polygon shape)
+		Model_OpenGL(Polygon shape, cstr texture_path)
 		{
 			switch (shape)
 			{
 			case twob::CUBE:
-				meshes.push_back(cube_mesh());
+				meshes.push_back(cube_mesh(texture_path));
 				break;
 			case twob::SPHERE:
 				break;
@@ -373,6 +377,8 @@ namespace twob
 		{
 			shader->set_value("model", model_matrix);
 
+			glBindTexture(GL_TEXTURE_2D, meshes[0].texture->texture_ref);
+
 			glBindVertexArray(vertex_array_object);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
@@ -398,6 +404,12 @@ namespace twob
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 			glEnableVertexAttribArray(0);
 
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+			glEnableVertexAttribArray(1);
+
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+			glEnableVertexAttribArray(2);
+
 			glBindVertexArray(0);
 		}
 	};
@@ -422,8 +434,15 @@ namespace twob
 			cluster.shader()->use();
 			cluster.shader()->set_value("projection", perspective(radians(45.0f), (float)vp->w / (float)vp->h, 0.1f, 1000.0f));
 			cluster.shader()->set_value("view", cluster.camera()->view_matrix());
+			
+			MapModel::const_iterator it = cluster.models().begin();
 
-			cluster.models().at(0)->render(cluster.shader());
+			while( it != cluster.models().end())
+			{
+				Model& model = *(it->second);
+				model.render(cluster.shader());
+				it++;
+			}
 
 		}
 
@@ -450,9 +469,14 @@ namespace twob
 			return nullptr;
 		}
 
-		Model* create_model(Polygon shape) override
+		Model* create_model(Polygon shape, cstr texture_path) override
 		{
-			return new Model_OpenGL(shape);
+			return new Model_OpenGL(shape, texture_path);
+		}
+
+		Texture* create_texture(cstr texture_path) override
+		{
+			return new Texture_OpenGL(texture_path);
 		}
 
 		Camera* create_camera() override

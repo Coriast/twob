@@ -2,12 +2,6 @@
 
 using namespace twob;
 
-enum Objects
-{
-	cube,
-	water_cube
-};
-
 void startup();
 void render();
 
@@ -32,8 +26,8 @@ void startup()
 {
 	bunch_of_stuff.init();
 
-	bunch_of_stuff.load_model(Polygon::CUBE, Objects::cube);
-
+	bunch_of_stuff.load_model(Polygon::CUBE, "cubo", Path::get_absolute_path("wall.jpg").c_str());
+	
 }
 
 void render()

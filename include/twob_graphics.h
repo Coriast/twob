@@ -1,6 +1,7 @@
 #pragma once
-#include <twob_aliases.h>
+#include <glad/glad.h>
 #include <twob_color.h>
+#include <twob_aliases.h>
 #include <twob_image.h>
 #include <vector>
 #include <glm/ext.hpp>
@@ -52,7 +53,7 @@ namespace twob
 	{
 		vector<vertex>	vertices;
 		vector<u_int>	indices;
-		vector<Texture> textures;
+		Texture* texture;
 
 		Color color;
 	};
@@ -91,6 +92,9 @@ namespace twob
 	class Texture
 	{
 	public:
+		Image* image;
+		GLuint texture_ref;
+
 		virtual void create(cstr file_path) = 0;
 	};
 

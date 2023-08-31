@@ -16,7 +16,8 @@ namespace twob
 
 		virtual Material* create_material(MaterialData* material = nullptr) = 0;
 		virtual Model* create_model(cstr file_path) = 0;
-		virtual Model* create_model(Polygon shape) = 0;
+		virtual Model* create_model(Polygon shape, cstr texture_path) = 0;
+		virtual Texture* create_texture(cstr texture_path) = 0;
 		virtual Shader* create_shader(cstr vertex_source = nullptr, cstr fragment_source = nullptr) = 0;
 		virtual Camera* create_camera() = 0;
 

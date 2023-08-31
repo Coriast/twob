@@ -46,12 +46,17 @@ void Cluster::load_material()
 
 }
 
-void Cluster::load_model(cstr file_path, ModelId m)
+void Cluster::load_model(cstr file_path, cstr name)
 {
 }
 
-void Cluster::load_model(Polygon polygon, ModelId m)
+void Cluster::load_model(Polygon polygon, cstr name, cstr texture_path)
 {
-	Model* model = Internal::app_renderer()->create_model(polygon);
-	c_models[m] = model;
+	Model* model = Internal::app_renderer()->create_model(polygon, texture_path);
+	c_models[name] = model;
+}
+
+const Model& Cluster::get_model(cstr name)
+{
+	return *c_models[name];
 }
