@@ -17,15 +17,22 @@ namespace
 	Config		app_config;
 	bool		app_is_running = false;
 	bool		app_is_exiting = false;
+	bool		app_resized	= false;
 
 	Renderer*	app_renderer_api;
 }
 
 void app_step()
 {
-	Canvas::update();
-	if (app_config.on_update != nullptr)
-		app_config.on_update();
+	// Update of inputs and bla bla bla
+	{
+		Canvas::update();
+		Internal::app_renderer()->camera()->update();
+
+		if (app_config.on_update != nullptr)
+			app_config.on_update();
+	}
+	Canvas::close_update();
 
 	// actually draw
 	{
@@ -33,6 +40,7 @@ void app_step()
 			app_config.on_render();
 		Canvas::swapBuffer();
 	}
+	Time::update_delta(Canvas::app_time());
 }
 
 void app_shutdown()
@@ -44,7 +52,7 @@ void App::run(const Config* config)
 {
 	app_config = *config;
 
-	Canvas::init(app_config);
+	Canvas::init();
 
 	app_is_running = true;
 	app_is_exiting = false;
@@ -69,9 +77,59 @@ bool App::is_running()
 	return app_is_running;
 }
 
-const Config& App::config()
+Config* App::config()
 {
-	return app_config;
+	return &app_config;
+}
+
+void App::set_flag(Flags flag, bool state)
+{
+	switch (flag)
+	{
+	case Fullscreen:
+			Canvas::set_fullscreen(state);
+		break;
+	case Resizable:
+			Canvas::set_resizable(state);
+		break;
+	default:
+		break;
+	}
+}
+
+void App::set_fullscreen()
+{
+	app_flags.fullscreen = !app_flags.fullscreen;
+	set_flag(Flags::Fullscreen, app_flags.fullscreen);
+}
+
+void App::resize(int width, int height)
+{
+	app_config.width = width;
+	app_config.height = height;
+	app_resized = true;
+}
+
+bool App::was_resized(bool close_resize_cycle)
+{
+	if (close_resize_cycle)
+		app_resized = false;
+	return app_resized;
+}
+
+bool App::get_flag(Flags flag)
+{
+	switch (flag)
+	{
+	case Fullscreen:
+		return app_flags.fullscreen;
+		break;
+	case Resizable:
+		return app_flags.resizable;
+		break;
+	default:
+		break;
+	}
 }
 
 Renderer* Internal::app_renderer()
@@ -79,34 +137,7 @@ Renderer* Internal::app_renderer()
 	return app_renderer_api;
 }
 
-glm::vec2 App::get_size()
+void Internal::exit_app()
 {
-	ivec2 size;
-	Canvas::get_size(&size.x, &size.y);
-	return size;
+	app_is_exiting = true;
 }
-
-void App::set_flag(Flags flag, bool enabled)
-{
-	switch (flag)
-	{
-	case Fullscreen:
-		if (app_flags.fullscreen != enabled)
-		{
-			Canvas::set_fullscreen(enabled);
-			app_flags.fullscreen = enabled;
-		}
-		break;
-	case Resizable:
-		if (app_flags.resizable != enabled)
-		{
-			Canvas::set_resizable(enabled);
-			app_flags.resizable = enabled;
-		}
-		break;
-	default:
-		break;
-	}
-}
-
-

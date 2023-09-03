@@ -17,7 +17,9 @@ namespace twob
 	* -> That way you can call just one render for each bunch of models 
 	*	 that'll use the same configurations.
 	* 
-	* -> Probably camera will be set apart of the rendering specific architecture
+	* -> Probably camera will be set apart of the rendering specific architecture:
+	*    Camera now is an unique object.
+	*	 Viewport also is distatched from the Cluster, don't make sense to keep it bounded.
 	*/
 	class Cluster
 	{
@@ -41,10 +43,10 @@ namespace twob
 		const MapModel&	models()	{ return c_models; }
 		Shader*		shader()	{ return c_shader; }
 		Material*	material()	{ return c_material; }
-		Camera*		camera()	{ return c_camera; }
-		Viewport*	viewport()	{ return c_viewport; }
 
 		void init();
+
+		void update();
 
 		void render();
 
@@ -52,10 +54,8 @@ namespace twob
 	private:
 		bool has_own_shader;
 
-		Viewport*	c_viewport;
 		Shader*		c_shader;
 		Material*	c_material;
-		Camera*		c_camera;
 
 		MapModel c_models;
 	};

@@ -15,7 +15,8 @@ target_sources(twob
         "src/internal/twob_canvas.cpp"
         "src/twob_app.cpp"
         "src/internal/twob_renderer_opengl.cpp" 
-        "src/twob_cluster.cpp")
+        "src/twob_cluster.cpp" 
+        "src/twob_input.cpp")
  
 target_include_directories(twob 
     PUBLIC

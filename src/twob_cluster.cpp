@@ -8,10 +8,8 @@ Cluster::Cluster()
 {
 	has_own_shader = false;
 
-	c_viewport = new Viewport(0, 0, 0, 0);
 	c_shader = nullptr;
 	c_material = nullptr;
-	c_camera = nullptr;
 }
 
 void Cluster::init()
@@ -20,19 +18,19 @@ void Cluster::init()
 		c_shader = Internal::app_renderer()->create_shader();
 	if (c_material == nullptr)
 		c_material = Internal::app_renderer()->create_material();
-	if (c_camera == nullptr)
-		c_camera = Internal::app_renderer()->create_camera();
 
+	c_shader->use();
+	c_shader->set_projection();
+}
+
+void Cluster::update()
+{
+	if (App::was_resized())
+		c_shader->set_projection();
 }
 
 void Cluster::render()
 {
-	{ 
-		int w, h;
-		Canvas::get_size(&w, &h);
-		*c_viewport = { 0, 0, w, h };
-	}
-	
 	Internal::app_renderer()->render(*this);
 }
 

@@ -39,14 +39,18 @@ namespace twob
 
 		bool is_running();
 
-		const Config& config();
+		bool was_resized(bool close_resize_cycle = false);
 
-		vec2 get_size();
+		Config* config();
 
-		void set_flag(Flags flag, bool enabled);
+		void set_flag(Flags flag, bool state);
 
-		inline void set_fullscreen(bool enabled) { set_flag(Flags::Fullscreen, enabled); }
+		bool get_flag(Flags flag);
 
-		inline void set_resizable(bool enabled) { set_flag(Flags::Resizable, enabled); }
+		void set_fullscreen();
+
+		void set_resizable();
+
+		void resize(int width, int height);
 	}
 }

@@ -20,14 +20,6 @@ namespace twob
 		Vulkan
 	};
 
-	enum Direction
-	{
-		FORWARD,
-		BACKWARD,
-		RIGHT,
-		LEFT
-	};
-
 	enum Polygon
 	{
 		CUBE,
@@ -80,6 +72,8 @@ namespace twob
 
 		virtual void use() = 0;
 
+		virtual void set_projection() = 0;
+
 		virtual void set_value(cstr name, bool& value) = 0;
 		virtual void set_value(cstr name, float& value) = 0;
 		virtual void set_value(cstr name, int& value) = 0;
@@ -96,16 +90,6 @@ namespace twob
 		GLuint texture_ref;
 
 		virtual void create(cstr file_path) = 0;
-	};
-
-	class Camera
-	{
-	public:
-
-		virtual mat4 view_matrix() = 0;
-		virtual void process_keyboard(Direction direct) = 0;
-		virtual void process_mouse(float x_offset, float y_offset) = 0;
-		virtual void update_vectors() = 0;
 	};
 
 	class FrameBuffer

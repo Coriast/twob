@@ -3,17 +3,19 @@
 using namespace twob;
 
 void startup();
+void update();
 void render();
 
 int main()
 {
 	Config config;
 	config.name = "Teste Abstração";
-	config.width = 720;
+	config.width = 1080;
 	config.height = 720;
 	config.renderer_type = RendererType::OpenGL;
 
 	config.on_startup = startup;
+	config.on_update = update;
 	config.on_render = render;
 
 	App::run(&config);
@@ -28,6 +30,14 @@ void startup()
 
 	bunch_of_stuff.load_model(Polygon::CUBE, "cubo", Path::get_absolute_path("wall.jpg").c_str());
 	
+}
+
+void update()
+{
+	bunch_of_stuff.update();
+
+	if (Input::KeyPressed[GLFW_KEY_G].pressed)
+		cout << "g pressed  ";
 }
 
 void render()

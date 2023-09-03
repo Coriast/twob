@@ -3,6 +3,7 @@
 #include "twob_canvas.h"
 #include "twob_time.h"
 #include "twob_filesystem.h"
+#include "twob_camera.hpp"
 #include "twob_aliases.h"
 #include <glad/glad.h>
 #include <iostream>
@@ -54,14 +55,14 @@ namespace
 				{	vec3(0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 0.0f) },
 				{	vec3(0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 1.0f) },
 				{	vec3(0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 1.0f) },
-				{	vec3(-0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 0.0f) },
+				{	vec3(-0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 1.0f) },
 				{	vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 0.0f) },
 
 				{   vec3(-0.5f, -0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 0.0f) },
 				{	vec3(0.5f, -0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 0.0f) },
 				{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f) },
 				{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f) },
-				{	vec3(-0.5f, 0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 0.0f) },
+				{	vec3(-0.5f, 0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 1.0f) },
 				{	vec3(-0.5f, -0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f),	vec2(0.0f, 0.0f) },
 
 				{   vec3(-0.5f, 0.5f, 0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(1.0f, 0.0f) },
@@ -166,6 +167,11 @@ namespace twob
 			glUseProgram(this->program_ref);
 		}
 
+		void set_projection() override
+		{
+			set_value("projection", perspective(radians(45.0f), (float)App::config()->width / (float)App::config()->height, 0.1f, 1000.0f));
+		}
+
 		void set_value(cstr name, bool& value) override
 		{
 			glUniform1i(glGetUniformLocation(this->program_ref, name), value);
@@ -251,76 +257,6 @@ namespace twob
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->image_data);
 			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-	};
-
-	class Camera_OpenGL : public Camera
-	{
-	private:
-		vec3 position	= vec3(0.0f, 0.0f, 3.0f);
-		vec3 front		= vec3(0.0f, 0.0f, -1.0f);
-		vec3 up			= vec3(0.0f, 1.0f, 0.0f);
-		vec3 right;
-		vec3 world_up;
-
-		float yaw, pitch;
-
-		float movement_speed;
-		float mouse_sensitivity;
-
-	public:
-		mat4 view_matrix() override
-		{
-			return lookAt(position, position + front, up);
-		}
-
-		void process_keyboard(Direction direct) override
-		{
-			float velocity = movement_speed * Time::delta();
-			if (direct == Direction::FORWARD)
-			{
-				position += front * velocity;
-			}
-			if (direct == Direction::BACKWARD)
-			{
-				position -= front * velocity;
-			}
-			if (direct == Direction::LEFT)
-			{
-				position -= right * velocity;
-			}
-			if (direct == Direction::RIGHT)
-			{
-				position += right * velocity;
-			}
-		}
-
-		void process_mouse(float x_offset, float y_offset) override
-		{
-			x_offset *= mouse_sensitivity;
-			y_offset *= mouse_sensitivity;
-
-			yaw += x_offset;
-			pitch += y_offset;
-
-			if (pitch > 89.0f)
-				pitch = 89.0f;
-			if (pitch < -89.0f)
-				pitch = -89.0f;
-
-			update_vectors();
-		}
-
-		void update_vectors() override
-		{
-			vec3 front;
-			front.x = cos(radians(yaw)) * cos(radians(pitch));
-			front.y = sin(radians(pitch));
-			front.z = sin(radians(yaw)) * cos(radians(pitch));
-			front = normalize(front);
-
-			right = normalize(cross(front, world_up));
-			up = normalize(cross(right, front));
 		}
 	};
 
@@ -416,24 +352,26 @@ namespace twob
 
 	class Renderer_OpenGL : public Renderer
 	{
+	private:
+		Camera* active_camera;
+		Viewport* viewport = new Viewport(0, 0, 0, 0);
+
 	public:
 		void init() override
 		{
 			glEnable(GL_DEPTH_TEST);
+			active_camera = create_camera();
+
+			set_viewport();
 		}
 
 		void render(Cluster& cluster) override
 		{
-
-			Viewport* vp = viewport(cluster);
-			glViewport(vp->x, vp->y, vp->w, vp->h);
-
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			cluster.shader()->use();
-			cluster.shader()->set_value("projection", perspective(radians(45.0f), (float)vp->w / (float)vp->h, 0.1f, 1000.0f));
-			cluster.shader()->set_value("view", cluster.camera()->view_matrix());
+			cluster.shader()->set_value("view", active_camera->view_matrix());
 			
 			MapModel::const_iterator it = cluster.models().begin();
 
@@ -444,6 +382,12 @@ namespace twob
 				it++;
 			}
 
+		}
+
+		void set_viewport() override
+		{
+			*viewport = { 0, 0, App::config()->width, App::config()->height };
+			glViewport(viewport->x, viewport->y, viewport->w, viewport->h);
 		}
 
 		// Factory Methods //
@@ -481,7 +425,12 @@ namespace twob
 
 		Camera* create_camera() override
 		{
-			return new Camera_OpenGL();
+			return new Camera();
+		}
+
+		Camera* camera() override
+		{
+			return active_camera;
 		}
 	};
 

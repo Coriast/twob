@@ -9,7 +9,7 @@ namespace twob
 	namespace Canvas
 	{
 		// Create the GLFW window and context based on RendererType
-		void init(Config& config);
+		void init();
 
 		void set_fullscreen(bool state);
 
@@ -23,7 +23,9 @@ namespace twob
 		// To update all Input States (Mouse, Keyboard, Gamepads)
 		void update();
 
-		void get_size(int* width, int* height);
+		void close_update();
+
+		double app_time();
 
 	}
 }
