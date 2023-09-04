@@ -16,7 +16,8 @@ target_sources(twob
         "src/twob_app.cpp"
         "src/internal/twob_renderer_opengl.cpp" 
         "src/twob_cluster.cpp" 
-        "src/twob_input.cpp")
+        "src/twob_input.cpp"
+        "src/twob_camera.cpp")
  
 target_include_directories(twob 
     PUBLIC

@@ -1,7 +1,7 @@
 #pragma once
 #include <twob_graphics.h>
 #include <twob_cluster.h>
-#include <twob_camera.hpp>
+#include <twob_camera.h>
 
 namespace twob
 {

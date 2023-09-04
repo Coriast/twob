@@ -27,5 +27,10 @@ namespace twob
 
 		double app_time();
 
+		void get_cursor(double *x, double *y);
+		void get_screen_size(int* width, int* height);
+
+		void mouse_cursor(bool enabled);
+
 	}
 }

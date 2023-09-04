@@ -35,6 +35,26 @@ namespace
 		}
 	}
 
+	void mouse_click_callback(GLFWwindow* window, int key, int action, int mods)
+	{
+		if (action == GLFW_PRESS)
+		{
+			Input::KeyHold[key] = true;
+
+			if (Input::KeyPressed[key].released)
+			{
+				Input::KeyPressed[key].pressed = true;
+				Input::KeyPressed[key].released = false;
+			}
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			Input::KeyHold[key] = false;
+			Input::KeyPressed[key].pressed = false;
+			Input::KeyPressed[key].released = true;
+		}
+	}
+
 	void window_size_callback(GLFWwindow* glfw_window, int width, int height)
 	{
 		if (width == 0 || height == 0)
@@ -70,6 +90,7 @@ void Canvas::init()
 	glfw_window = glfwCreateWindow(App::config()->width, App::config()->height, App::config()->name, nullptr, nullptr);
 	glfwMakeContextCurrent(glfw_window);
 	glfwSetKeyCallback(glfw_window, key_callback);
+	glfwSetMouseButtonCallback(glfw_window, mouse_click_callback);
 	glfwSetWindowSizeCallback(glfw_window, window_size_callback);
 
 	// glad related
@@ -132,4 +153,19 @@ void Canvas::close_update()
 double Canvas::app_time()
 {
 	return glfwGetTime();
+}
+
+void Canvas::get_cursor(double* x, double* y)
+{
+	glfwGetCursorPos(glfw_window, x, y);
+}
+
+void Canvas::get_screen_size(int* width, int* height)
+{
+	glfwGetFramebufferSize(glfw_window, width, height);
+}
+
+void Canvas::mouse_cursor(bool enabled)
+{
+	glfwSetInputMode(glfw_window, GLFW_CURSOR, enabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 }
