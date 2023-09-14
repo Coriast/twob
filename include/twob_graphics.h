@@ -7,7 +7,6 @@
 #include <glm/ext.hpp>
 #include <glm/glm.hpp>
 
-using namespace std;
 using namespace glm;
 
 namespace twob
@@ -27,6 +26,12 @@ namespace twob
 		PYRAMID
 	};
 
+	enum ModelType
+	{
+		wavefront,
+		gltf
+	};
+
 	struct Viewport
 	{
 		int x, y, w, h;
@@ -39,15 +44,6 @@ namespace twob
 		vec3 position;
 		vec3 normal;
 		vec2 tex_coord;
-	};
-
-	struct Mesh
-	{
-		vector<vertex>	vertices;
-		vector<u_int>	indices;
-		Texture* texture;
-
-		Color color;
 	};
 
 	struct MaterialData
@@ -74,13 +70,49 @@ namespace twob
 
 		virtual void set_projection() = 0;
 
-		virtual void set_value(cstr name, bool& value) = 0;
-		virtual void set_value(cstr name, float& value) = 0;
+		virtual void set_value(cstr name, bool value) = 0;
 		virtual void set_value(cstr name, int& value) = 0;
+		virtual void set_value(cstr name, float& value) = 0;
 		virtual void set_value(cstr name, const vec2& value) = 0;
 		virtual void set_value(cstr name, const vec3& value) = 0;
 		virtual void set_value(cstr name, const vec4& value) = 0;
 		virtual void set_value(cstr name, const mat4& value) = 0;
+	};
+
+	class FrameBuffer
+	{
+
+	};
+
+	class Mesh
+	{
+	public:
+		bool has_texture = false;
+		std::vector<vertex>	vertices;
+		std::vector<u_int>	indices;
+		Texture* texture;
+		Color color;
+
+		virtual void set_tex(cstr texture_path) = 0;
+		virtual void set_color(Color color) = 0;
+		virtual void generate_buffers() = 0;
+		virtual void set_gpu_data() = 0;
+
+	};
+
+	class Model
+	{
+	protected:
+		mat4 model_matrix;
+	
+	public:
+		std::vector<Mesh*> meshes;
+
+		virtual void translate(vec3 translate) = 0;
+		virtual void scale(vec3 scale) = 0;
+		virtual void rotate(vec3 axis, float angle) = 0;
+
+		virtual void render(Shader* shader) = 0;
 	};
 
 	class Texture
@@ -90,24 +122,5 @@ namespace twob
 		GLuint texture_ref;
 
 		virtual void create(cstr file_path) = 0;
-	};
-
-	class FrameBuffer
-	{
-
-	};
-
-	class Model
-	{
-	protected:
-		vector<Mesh> meshes;
-		mat4		 model_matrix;
-	
-	public:
-		virtual void translate(vec3 translate) = 0;
-		virtual void scale(vec3 scale) = 0;
-		virtual void rotate(vec3 axis, float angle) = 0;
-
-		virtual void render(Shader* shader) = 0;
 	};
 }

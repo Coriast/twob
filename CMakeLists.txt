@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
-set(CMAKE CXX_STANDARD 17)
+
+set(CMAKE CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++20")
+
 project(twob)
 
 # can choose STATIC | SHARED | MODULE

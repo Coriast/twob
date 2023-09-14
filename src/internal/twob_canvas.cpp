@@ -137,7 +137,7 @@ void Canvas::update()
 
 void Canvas::close_update()
 {
-	map<int, CheckRelease>::iterator it = Input::KeyPressed.begin();
+	std::map<int, CheckRelease>::iterator it = Input::KeyPressed.begin();
 	while (it != Input::KeyPressed.end())
 	{
 		if (it->second.pressed)

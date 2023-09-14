@@ -1,6 +1,5 @@
 #include "twob_redblacktree.h"
 
-using namespace std;
 using namespace twob;
 
 RedBlackTree::RedBlackTree()
@@ -33,7 +32,7 @@ bool RedBlackTree::insert(int key)
     {
         return false;
     }
-    cout << key << " Inserted!" << endl;
+    std::cout << key << " Inserted!" << std::endl;
 
     NodeRB* node = new NodeRB(key);
     {
@@ -133,7 +132,7 @@ bool RedBlackTree::remove(int key)
     {
         return false;
     }
-    cout << key << " Removed!" << endl;
+    std::cout << key << " Removed!" << std::endl;
 
     NodeRB* sibling;
     NodeRB* aux = *search;
@@ -371,34 +370,34 @@ void RedBlackTree::find(int key, NodeRB ***node, stateRB &state)
 
 void RedBlackTree::print()
 {
-    cout << "\n";
+    std::cout << "\n";
     print(root, "", true);
 }
 
-void RedBlackTree::print(NodeRB* node, string indent, bool last)
+void RedBlackTree::print(NodeRB* node, std::string indent, bool last)
 {
     if (node == nil)
         return;
 
-    cout << indent;
+    std::cout << indent;
 
     if (last)
     {
-        cout << "R---";
+        std::cout << "R---";
         indent += "    ";
     }
     else
     {
-        cout << "L---";
+        std::cout << "L---";
         indent += "|   ";
     }
-    string node_color;
+    std::string node_color;
     if (ColorRB::red == node->color)
         node_color = "Red";
     else
         node_color = "Black";
 
-    cout << node->key << "(" << node_color << ")" << endl;
+    std::cout << node->key << "(" << node_color << ")" << std::endl;
     print(node->left, indent, false);
     print(node->right, indent, true);
 }

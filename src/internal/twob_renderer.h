@@ -18,8 +18,9 @@ namespace twob
 		virtual void set_viewport() = 0;
 
 		virtual Material* create_material(MaterialData* material = nullptr) = 0;
-		virtual Model* create_model(cstr file_path) = 0;
-		virtual Model* create_model(Polygon shape, cstr texture_path) = 0;
+		virtual Mesh* create_mesh(std::vector<vertex> vertices) = 0;
+		virtual Model* create_model(ModelType type, cstr folder_path) = 0;
+		virtual Model* create_primitive(Polygon shape) = 0;
 		virtual Texture* create_texture(cstr texture_path) = 0;
 		virtual Shader* create_shader(cstr vertex_source = nullptr, cstr fragment_source = nullptr) = 0;
 		virtual Camera* create_camera() = 0;

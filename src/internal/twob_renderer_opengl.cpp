@@ -17,6 +17,7 @@ namespace
 		layout (location = 0) in vec3 position;
 		layout (location = 1) in vec3 normals;
 		layout (location = 2) in vec2 texture_coords;
+		//layout (location = 3) in vec3 _color_; // probably send color only one time
 
 		out vec2 _texture_coords;
 
@@ -36,70 +37,23 @@ namespace
 
 		in vec2 _texture_coords;
 
+		uniform vec3 color;
+		uniform bool has_texture;
 		uniform sampler2D texture_data;
 
 		void main()
 		{
-			FragColor = texture(texture_data, _texture_coords);
+			if(has_texture)
+			{
+				FragColor = texture(texture_data, _texture_coords);
+			}
+			else 
+			{
+				FragColor = vec4(color, 1.0f);
+			}
 		}
 	)";
-
-	Mesh cube_mesh(cstr texture_path)
-	{
-		Mesh cube;
-		vector<vertex> vertices;
-		vertices.insert(vertices.end(),
-			{
-				//  vertices					normals					 texture coords
-				{   vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 0.0f) },
-				{	vec3(0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 0.0f) },
-				{	vec3(0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 1.0f) },
-				{	vec3(0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 1.0f) },
-				{	vec3(-0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 1.0f) },
-				{	vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 0.0f) },
-
-				{   vec3(-0.5f, -0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 0.0f) },
-				{	vec3(0.5f, -0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 0.0f) },
-				{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f) },
-				{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f) },
-				{	vec3(-0.5f, 0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 1.0f) },
-				{	vec3(-0.5f, -0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f),	vec2(0.0f, 0.0f) },
-
-				{   vec3(-0.5f, 0.5f, 0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(1.0f, 0.0f) },
-				{	vec3(-0.5f, 0.5f, -0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(1.0f, 1.0f) },
-				{	vec3(-0.5f, -0.5f, -0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(0.0f, 1.0f) },
-				{	vec3(-0.5f, -0.5f, -0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(0.0f, 1.0f) },
-				{	vec3(-0.5f, -0.5f, 0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(0.0f, 0.0f) },
-				{	vec3(-0.5f, 0.5f, 0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(1.0f, 0.0f) },
-
-				{   vec3(0.5f, 0.5f, 0.5f),		vec3(1.0f, 0.0f, 0.0f), vec2(1.0f, 0.0f) },
-				{	vec3(0.5f, 0.5f, -0.5f),	vec3(1.0f, 0.0f, 0.0f), vec2(1.0f, 1.0f) },
-				{	vec3(0.5f, -0.5f, -0.5f),	vec3(1.0f, 0.0f, 0.0f), vec2(0.0f, 1.0f) },
-				{	vec3(0.5f, -0.5f, -0.5f),	vec3(1.0f, 0.0f, 0.0f), vec2(0.0f, 1.0f) },
-				{	vec3(0.5f, -0.5f, 0.5f),	vec3(1.0f, 0.0f, 0.0f), vec2(0.0f, 0.0f) },
-				{	vec3(0.5f, 0.5f, 0.5f),		vec3(1.0f, 0.0f, 0.0f),	vec2(1.0f, 0.0f) },
-
-				{   vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(0.0f, 1.0f) },
-				{	vec3(0.5f, -0.5f, -0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(1.0f, 1.0f) },
-				{	vec3(0.5f, -0.5f, 0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(1.0f, 0.0f) },
-				{	vec3(0.5f, -0.5f, 0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(1.0f, 0.0f) },
-				{	vec3(-0.5f, -0.5f, 0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(0.0f, 0.0f) },
-				{	vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(0.0f, 1.0f) },
-
-				{   vec3(-0.5f, 0.5f, -0.5f),	vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f) },
-				{	vec3(0.5f, 0.5f, -0.5f),	vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f) },
-				{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f) },
-				{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f) },
-				{	vec3(-0.5f, 0.5f, 0.5f),	vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f) },
-				{	vec3(-0.5f, 0.5f, -0.5f),	vec3(0.0f, 1.0f, 0.0f),	vec2(0.0f, 1.0f) }
-			}
-		);
-
-		cube.vertices = vertices;
-		cube.texture = Internal::app_renderer()->create_texture(texture_path);
-		cube.color = Color::purple();
-		return cube;
-	}
+	
 }
 
 namespace twob
@@ -172,7 +126,7 @@ namespace twob
 			set_value("projection", perspective(radians(45.0f), (float)App::config()->width / (float)App::config()->height, 0.1f, 1000.0f));
 		}
 
-		void set_value(cstr name, bool& value) override
+		void set_value(cstr name, bool value) override
 		{
 			glUniform1i(glGetUniformLocation(this->program_ref, name), value);
 		}
@@ -217,8 +171,8 @@ namespace twob
 				if (!success)
 				{
 					glGetShaderInfoLog(shader_ref, 1024, NULL, infoLog);
-					cout << "| ERROR::SHADER: Compile-time error: Type: " << type << "\n"
-						<< infoLog << "\n -- -------------------- -- " << endl;
+					std::cout << "| ERROR::SHADER: Compile-time error: Type: " << type << "\n"
+						<< infoLog << "\n -- -------------------- -- " << std::endl;
 				}
 			}
 			else
@@ -227,8 +181,8 @@ namespace twob
 				if (!success)
 				{
 					glGetProgramInfoLog(shader_ref, 1024, NULL, infoLog);
-					cout << "| ERROR::SHADER: Link-time error: Type: " << type << "\n"
-						<< infoLog << "\n -- ---------------------- -- " << endl;
+					std::cout << "| ERROR::SHADER: Link-time error: Type: " << type << "\n"
+						<< infoLog << "\n -- ---------------------- -- " << std::endl;
 				}
 			}
 		}
@@ -247,16 +201,17 @@ namespace twob
 			image = new Image(file_path);
 
 			glGenTextures(1, &texture_ref);
-
 			glBindTexture(GL_TEXTURE_2D, texture_ref);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->image_data);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->width, image->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->image_data);
 			glGenerateMipmap(GL_TEXTURE_2D);
+
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	};
 
@@ -265,18 +220,117 @@ namespace twob
 
 	};
 
+	class Mesh_OpenGL : public Mesh
+	{
+	public:
+
+		GLuint vertex_buffer_object;
+		GLuint element_buffer_object;
+
+		void set_tex(cstr texture_path) override
+		{
+			Texture* tex = Internal::app_renderer()->create_texture(texture_path);
+			this->texture = tex;
+			this->has_texture = true;
+		}
+
+		void set_color(Color color) override
+		{
+			this->color = color;
+		}
+
+		void generate_buffers() override
+		{
+			glGenBuffers(1, &vertex_buffer_object);
+			glGenBuffers(1, &element_buffer_object);
+		}
+
+		void set_gpu_data() override
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+			glBufferData(GL_ARRAY_BUFFER, (sizeof(vec3) + sizeof(vec3) + sizeof(vec2)) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+
+			if (!indices.empty())
+			{
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+			}
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(0);
+
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+			glEnableVertexAttribArray(1);
+
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+			glEnableVertexAttribArray(2);
+		}
+	};
+
 	class Model_OpenGL : public Model
 	{
 	private:
 		GLuint vertex_array_object;
 
 	public:
-		Model_OpenGL(Polygon shape, cstr texture_path)
+		Model_OpenGL(Polygon shape)
 		{
 			switch (shape)
 			{
 			case twob::CUBE:
-				meshes.push_back(cube_mesh(texture_path));
+			{
+				Mesh_OpenGL* cube = new Mesh_OpenGL();
+				std::vector<vertex> vertices;
+				vertices.insert(vertices.end(),
+					{
+						//  vertices					normals					 texture coords
+						{   vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 0.0f) },
+						{	vec3(0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 0.0f) },
+						{	vec3(0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 1.0f) },
+						{	vec3(0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(1.0f, 1.0f) },
+						{	vec3(-0.5f, 0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 1.0f) },
+						{	vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, 0.0f, -1.0f), vec2(0.0f, 0.0f) },
+
+						{   vec3(-0.5f, -0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 0.0f) },
+						{	vec3(0.5f, -0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 0.0f) },
+						{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f) },
+						{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f) },
+						{	vec3(-0.5f, 0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 1.0f) },
+						{	vec3(-0.5f, -0.5f, 0.5f),	vec3(0.0f, 0.0f, 1.0f),	vec2(0.0f, 0.0f) },
+
+						{   vec3(-0.5f, 0.5f, 0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(1.0f, 0.0f) },
+						{	vec3(-0.5f, 0.5f, -0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(1.0f, 1.0f) },
+						{	vec3(-0.5f, -0.5f, -0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(0.0f, 1.0f) },
+						{	vec3(-0.5f, -0.5f, -0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(0.0f, 1.0f) },
+						{	vec3(-0.5f, -0.5f, 0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(0.0f, 0.0f) },
+						{	vec3(-0.5f, 0.5f, 0.5f),	vec3(-1.0f, 0.0f, 0.0f), vec2(1.0f, 0.0f) },
+
+						{   vec3(0.5f, 0.5f, 0.5f),		vec3(1.0f, 0.0f, 0.0f), vec2(1.0f, 0.0f) },
+						{	vec3(0.5f, 0.5f, -0.5f),	vec3(1.0f, 0.0f, 0.0f), vec2(1.0f, 1.0f) },
+						{	vec3(0.5f, -0.5f, -0.5f),	vec3(1.0f, 0.0f, 0.0f), vec2(0.0f, 1.0f) },
+						{	vec3(0.5f, -0.5f, -0.5f),	vec3(1.0f, 0.0f, 0.0f), vec2(0.0f, 1.0f) },
+						{	vec3(0.5f, -0.5f, 0.5f),	vec3(1.0f, 0.0f, 0.0f), vec2(0.0f, 0.0f) },
+						{	vec3(0.5f, 0.5f, 0.5f),		vec3(1.0f, 0.0f, 0.0f),	vec2(1.0f, 0.0f) },
+
+						{   vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(0.0f, 1.0f) },
+						{	vec3(0.5f, -0.5f, -0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(1.0f, 1.0f) },
+						{	vec3(0.5f, -0.5f, 0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(1.0f, 0.0f) },
+						{	vec3(0.5f, -0.5f, 0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(1.0f, 0.0f) },
+						{	vec3(-0.5f, -0.5f, 0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(0.0f, 0.0f) },
+						{	vec3(-0.5f, -0.5f, -0.5f),	vec3(0.0f, -1.0f, 0.0f), vec2(0.0f, 1.0f) },
+
+						{   vec3(-0.5f, 0.5f, -0.5f),	vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f) },
+						{	vec3(0.5f, 0.5f, -0.5f),	vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f) },
+						{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f) },
+						{	vec3(0.5f, 0.5f, 0.5f),		vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f) },
+						{	vec3(-0.5f, 0.5f, 0.5f),	vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f) },
+						{	vec3(-0.5f, 0.5f, -0.5f),	vec3(0.0f, 1.0f, 0.0f),	vec2(0.0f, 1.0f) }
+					}
+				);
+
+				cube->vertices.insert(cube->vertices.end(), vertices.begin(), vertices.end());
+				meshes.push_back(cube);
+			}
 				break;
 			case twob::SPHERE:
 				break;
@@ -288,10 +342,16 @@ namespace twob
 			model_data_to_gpu();
 		}
 
-		Model_OpenGL(cstr path) 
+		Model_OpenGL(ModelType type, cstr folder_path) 
 		{
-			meshes = File::load_meshes_from_file(path);
+			if (type == wavefront)
+			{
+				File::load_meshes_from_obj(folder_path, meshes);
+
+			}
 			model_matrix = mat4(1.0f);
+
+			model_data_to_gpu();
 		}
 
 		void translate(vec3 translate) override
@@ -313,10 +373,24 @@ namespace twob
 		{
 			shader->set_value("model", model_matrix);
 
-			glBindTexture(GL_TEXTURE_2D, meshes[0].texture->texture_ref);
+			for (int i = 0; i < meshes.size(); i++)
+			{
+				shader->set_value("has_texture", meshes[i]->has_texture);
+				if (meshes[i]->has_texture)
+				{
+					glBindTexture(GL_TEXTURE_2D, meshes[i]->texture->texture_ref);
+				}
+				else
+				{
+					vec3 s_color(meshes[i]->color.r, meshes[i]->color.g, meshes[i]->color.b);
+					shader->set_value("color", s_color);
+				}
+			}
 
+			// while i don't have any model with multiple meshes i'm gonna draw only one 
 			glBindVertexArray(vertex_array_object);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawElements(GL_TRIANGLES, meshes[0]->indices.size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
 		}
 
 		mat4 get_model_matrix() 
@@ -329,22 +403,13 @@ namespace twob
 		{
 			glGenVertexArrays(1, &vertex_array_object);
 
-			GLuint vertex_buffer_object;
-			glGenBuffers(1, &vertex_buffer_object);
+			for (int i = 0; i < meshes.size(); i++)
+				meshes[i]->generate_buffers();
 
 			glBindVertexArray(vertex_array_object);
 
-			glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-			glBufferData(GL_ARRAY_BUFFER, (sizeof(vec3) + sizeof(vec3) + sizeof(vec2)) * meshes[0].vertices.size(), meshes[0].vertices.data(), GL_STATIC_DRAW);
-
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-			glEnableVertexAttribArray(1);
-
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-			glEnableVertexAttribArray(2);
+			for (int i = 0; i < meshes.size(); i++)
+				meshes[i]->set_gpu_data();
 
 			glBindVertexArray(0);
 		}
@@ -370,11 +435,9 @@ namespace twob
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			cluster.shader()->use();
 			cluster.shader()->set_value("view", active_camera->view_matrix());
 			
 			MapModel::const_iterator it = cluster.models().begin();
-
 			while( it != cluster.models().end())
 			{
 				Model& model = *(it->second);
@@ -408,19 +471,30 @@ namespace twob
 				return nullptr;// Create OpenGL material based on properties
 		}
 
-		Model* create_model(cstr file_path) override
+		Mesh* create_mesh(std::vector<vertex> vertices) override
 		{
-			return nullptr;
+			Mesh_OpenGL* mesh = new Mesh_OpenGL();
+			mesh->vertices = vertices;
+			return mesh;
 		}
 
-		Model* create_model(Polygon shape, cstr texture_path) override
+		Model* create_model(ModelType type, cstr folder_path) override
 		{
-			return new Model_OpenGL(shape, texture_path);
+			Model_OpenGL* model = new Model_OpenGL(type, folder_path);
+			return model;
+		}
+
+		Model* create_primitive(Polygon shape) override
+		{
+			return new Model_OpenGL(shape);
 		}
 
 		Texture* create_texture(cstr texture_path) override
 		{
-			return new Texture_OpenGL(texture_path);
+			if (texture_path != nullptr)
+				return new Texture_OpenGL(texture_path);
+			else
+				return nullptr;
 		}
 
 		Camera* create_camera() override

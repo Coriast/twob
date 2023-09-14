@@ -1,8 +1,6 @@
 #pragma once 
 #include <map>
 
-using namespace std;
-
 namespace twob
 {
 
@@ -15,7 +13,7 @@ namespace twob
 	class Input
 	{
 	public:
-		static map<int, CheckRelease> KeyPressed;
-		static map<int, bool> KeyHold;
+		static std::map<int, CheckRelease> KeyPressed;
+		static std::map<int, bool> KeyHold;
 	};
 }

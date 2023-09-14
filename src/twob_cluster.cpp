@@ -31,6 +31,7 @@ void Cluster::update()
 
 void Cluster::render()
 {
+	c_shader->use();
 	Internal::app_renderer()->render(*this);
 }
 
@@ -44,17 +45,30 @@ void Cluster::load_material()
 
 }
 
-void Cluster::load_model(cstr file_path, cstr name)
+Model* Cluster::load_model(cstr id, ModelType type, cstr folder_path)
 {
+	Model* model = Internal::app_renderer()->create_model(type, folder_path);
+
+	c_models[id] = model;
+	return model;
 }
 
-void Cluster::load_model(Polygon polygon, cstr name, cstr texture_path)
+Model* Cluster::load_primitive(cstr id, Polygon polygon)
 {
-	Model* model = Internal::app_renderer()->create_model(polygon, texture_path);
-	c_models[name] = model;
+	Model* model = Internal::app_renderer()->create_primitive(polygon);
+
+	c_models[id] = model;
+	return model;
 }
 
 const Model& Cluster::get_model(cstr name)
 {
 	return *c_models[name];
 }
+
+void Cluster::translate(cstr id, vec3 translate)
+{
+	c_models[id]->translate(translate);
+}
+
+

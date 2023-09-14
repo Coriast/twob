@@ -22,30 +22,35 @@ int main()
 }
 
 // You can create as many clusters as you need
-Cluster bunch_of_stuff;
+Cluster def;
 
 void startup()
 {
-	bunch_of_stuff.init();
+	def.init();
 
-	bunch_of_stuff.load_model(Polygon::CUBE, "cubo", Path::get_absolute_path("wall.jpg").c_str());
-	
+	//def.load_primitive("luiz", CUBE)->meshes[0]->set_tex(Path::get_absolute_path("luiz.jpeg").c_str());
+	//def.translate("luiz", vec3(0.0f, 0.0f, -3.0f));
+
+	//def.load_primitive("joao", CUBE)->meshes[0]->set_tex(Path::get_absolute_path("joao.jpeg").c_str());
+
+	Model* bunny = def.load_model("bunny", ModelType::wavefront, Path::get_absolute_path("stanford_bunny").c_str());
+	bunny->meshes[0]->set_color(Color::red());
+	def.translate("bunny", vec3(1.0f, 1.0f, -2.0f));
 }
 
 void update()
 {
-	bunch_of_stuff.update();
+	def.update();
 
 	if (Input::KeyPressed[GLFW_KEY_G].pressed)
-		cout << "g pressed  ";
+		std::cout << "g pressed  ";
 }
 
 void render()
 {
 	{
-		//bunch_of_stuff.translate(vec3(0.0f, 0.0f, 0.0f), Objects::cube);
 
-		bunch_of_stuff.render();	
+		def.render();
 	}
 
 }

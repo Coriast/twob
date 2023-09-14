@@ -4,11 +4,10 @@
 #include <unordered_map>
 
 using namespace glm;
-using namespace std;
 
 namespace twob
 {
-	typedef unordered_map<string, Model*> MapModel;
+	typedef std::unordered_map<std::string, Model*> MapModel;
 	/* 
 	* Some kind of All-in- one class. The Cluster's principle is to:
 	* -> Be a 3D models basket, where you can push all the models that
@@ -26,29 +25,31 @@ namespace twob
 	public:
 		Cluster();
 
+		void init();
+
+		void update();
+
+		void render();
+
 		// load content 
 		void load_shader(cstr vertex_source, cstr fragment_source);
 		void load_material();
 
-		void load_model(cstr file_path, cstr name);
-		void load_model(Polygon shape, cstr name, cstr texture_path = nullptr);
+		Model* load_model(cstr id, ModelType type, cstr folder_path);
 
-		const Model& get_model(cstr name);
+		Model* load_primitive(cstr id, Polygon shape);
 
-		void translate(vec3 translate, int id);
-		void rotate(vec3 axis, float angle, int id);
-		void scale(vec3 scale, int id);
+		const Model& get_model(cstr id);
+
+		void translate(cstr id, vec3 translate);
+		void rotate(cstr id, vec3 axis, float angle);
+		void scale(cstr id, vec3 scale);
 
 		// Getters
 		const MapModel&	models()	{ return c_models; }
 		Shader*		shader()	{ return c_shader; }
 		Material*	material()	{ return c_material; }
 
-		void init();
-
-		void update();
-
-		void render();
 
 
 	private:
