@@ -39,7 +39,7 @@ void Camera::update()
 	if (Input::KeyHold[GLFW_KEY_S])
 		process_keyboard(BACKWARD);
 
-	if (Input::KeyHold[GLFW_KEY_LEFT_SHIFT])
+	if (Input::KeyHold[GLFW_KEY_SPACE])
 		process_keyboard(UP);
 
 	if (Input::KeyHold[GLFW_KEY_LEFT_CONTROL])

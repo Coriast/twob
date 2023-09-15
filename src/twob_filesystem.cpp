@@ -76,26 +76,23 @@ void File::load_meshes_from_obj(cstr folder_path, std::vector<Mesh*> &meshes)
         else if (kword == "f")
         {
             std::string face;
+            int vert_index, norm_index;
 
             buffer >> face;
-            int vert_index, norm_index;
             vert_index = std::stoul(face.substr(0, face.find_first_of('/')), nullptr, 0) - 1;
             indices.push_back( vert_index );
-
             norm_index = std::stoul(face.substr(face.find_last_of('/') + 1), nullptr, 0) - 1;
             vertices[vert_index].normal = normals.at(norm_index);
 
             buffer >> face;
             vert_index = std::stoul(face.substr(0, face.find_first_of('/')), nullptr, 0) - 1;
             indices.push_back(vert_index);
-
             norm_index = std::stoul(face.substr(face.find_last_of('/') + 1), nullptr, 0) - 1;
             vertices[vert_index].normal = normals.at(norm_index);
 
             buffer >> face;
             vert_index = std::stoul(face.substr(0, face.find_first_of('/')), nullptr, 0) - 1;
             indices.push_back(vert_index);
-
             norm_index = std::stoul(face.substr(face.find_last_of('/') + 1), nullptr, 0) - 1;
             vertices[vert_index].normal = normals.at(norm_index);
         }

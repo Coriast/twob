@@ -28,10 +28,10 @@ void startup()
 {
 	def.init();
 
-	//def.load_primitive("luiz", CUBE)->meshes[0]->set_tex(Path::get_absolute_path("luiz.jpeg").c_str());
-	//def.translate("luiz", vec3(0.0f, 0.0f, -3.0f));
+	def.load_primitive("cubo1", CUBE)->meshes[0]->set_tex(Path::get_absolute_path("brick_wall.jpg").c_str());
+	def.translate("cubo1", vec3(0.0f, 0.0f, -3.0f));
 
-	//def.load_primitive("joao", CUBE)->meshes[0]->set_tex(Path::get_absolute_path("joao.jpeg").c_str());
+	def.load_primitive("cubo2", CUBE)->meshes[0]->set_tex(Path::get_absolute_path("wall.jpg").c_str());
 
 	Model* bunny = def.load_model("bunny", ModelType::wavefront, Path::get_absolute_path("stanford_bunny").c_str());
 	bunny->meshes[0]->set_color(Color::red());

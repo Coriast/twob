@@ -7,8 +7,6 @@ if(false)
 endif()
 
 configure_file("graphic/wall.jpg" "wall.jpg" COPYONLY)
-configure_file("graphic/luiz.jpeg" "luiz.jpeg" COPYONLY)
-configure_file("graphic/joao.jpeg" "joao.jpeg" COPYONLY)
 configure_file("graphic/brick_wall.jpg" "brick_wall.jpg" COPYONLY)
 
 configure_file("graphic/stanford_bunny/bunny.obj" "stanford_bunny/bunny.obj" COPYONLY)

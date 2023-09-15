@@ -389,7 +389,10 @@ namespace twob
 
 			// while i don't have any model with multiple meshes i'm gonna draw only one 
 			glBindVertexArray(vertex_array_object);
-			glDrawElements(GL_TRIANGLES, meshes[0]->indices.size(), GL_UNSIGNED_INT, 0);
+			if (!meshes[0]->indices.empty())
+				glDrawElements(GL_TRIANGLES, meshes[0]->indices.size(), GL_UNSIGNED_INT, 0);
+			else
+				glDrawArrays(GL_TRIANGLES, 0, meshes[0]->vertices.size());
 			glBindVertexArray(0);
 		}
 
