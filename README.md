@@ -45,32 +45,10 @@ git clone <repository-url>
 ```bash
 cd <project-directory>
 ```
-
-3. Instale as dependências utilizando vcpkg:
-
-Opcional: Para integração das dependências com Visual Studio
+3. Build com o CMake
 ```bash
-vcpkg integrate install
-```
-GLFW
-```bash
-vcpkg install glfw3 --triplet x64-windows
-```
-GLM
-```bash
-vcpkg install glm --triplet x64-windows
-```
-GLM
-```bash
-vcpkg install glad --triplet x64-windows
-```
-
-4. Build com o CMake
-
-```bash
-mkdir build && cd build
-cmake ../
-cmake --build .
+cmake -Bbuild
+cmake --build build
 ```
 
 ## Documentação
