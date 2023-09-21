@@ -10,8 +10,7 @@ project(twob)
 add_library(twob STATIC)
 
 target_sources(twob 
-    PRIVATE
-                   
+    PRIVATE   
         "src/twob_redblacktree.cpp"
         "src/twob_image.cpp"
         "src/twob_filesystem.cpp"
@@ -21,26 +20,48 @@ target_sources(twob
         "src/internal/twob_renderer_opengl.cpp" 
         "src/twob_cluster.cpp" 
         "src/twob_input.cpp"
-        "src/twob_camera.cpp")
- 
+        "src/twob_camera.cpp"
+)
+
+include(FetchContent)
+
+FetchContent_Declare(
+    glfw  
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG 3.3-stable
+)
+
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+)
+
+FetchContent_MakeAvailable(glfw)
+FetchContent_MakeAvailable(glm)
+
+find_package(OpenGL REQUIRED)
+
 target_include_directories(twob 
     PUBLIC
         include
+        ${glfw_SOURCE_DIR}/include
+        ${glm_SOURCE_DIR}
+        glad/include
 
     PRIVATE
         src
         src/internal
 )
-
-find_package(glfw3 REQUIRED)
-
-find_package(glm REQUIRED)
-
-find_package(glad REQUIRED)
-
-find_package(OpenGL REQUIRED)
-
-target_link_libraries(twob PUBLIC glfw glad::glad glm::glm ${OPENGL_LIBRARY})
+add_subdirectory(glad/)
+target_link_libraries(twob PRIVATE glfw glad glm::glm ${OPENGL_LIBRARIES})
 
 #compile demos executables
 add_subdirectory(demos)
+
+
+
+#find_package(glfw3 REQUIRED)
+
+#find_package(glm REQUIRED)
+
+#find_package(glad REQUIRED)

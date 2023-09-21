@@ -9,7 +9,7 @@ void render();
 int main()
 {
 	Config config;
-	config.name = "Teste Abstração";
+	config.name = "twob";
 	config.width = 1080;
 	config.height = 720;
 	config.renderer_type = RendererType::OpenGL;
